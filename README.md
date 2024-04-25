@@ -1,1 +1,1 @@
-Service design to help customers, using RESTful api , and JSON as response
+Service design to help clients, using RESTful api , and JSON as response
