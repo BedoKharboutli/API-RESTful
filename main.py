@@ -114,7 +114,7 @@ class Book(Resource):
             return {"Massage": "Book not found", "StatusCode": 404}
 
 
-OPEN_LIBRARY_API_URL = "http://openlibrary.org/search.json"
+"""OPEN_LIBRARY_API_URL = "http://openlibrary.org/search.json"
 
 
 # Resource for listing books from OPEN_LIBRARY_API by searching name
@@ -137,11 +137,11 @@ class Search_book(Resource):
 
             return jsonify({"StatusCode": 200, "book": book_details})
         else:
-            return jsonify({"StatusCode": 403, "error": "Failed to fetch books"})
+            return jsonify({"StatusCode": 403, "error": "Failed to fetch books"})"""
 
 
 api.add_resource(Books, "/books")  # API Endpoint
-api.add_resource(Search_book, "/books/<string:name>")  # API Endpoint
+"""api.add_resource(Search_book, "/books/<string:name>")  # API Endpoint"""
 api.add_resource(Book, "/book/<int:id>")  # API Endpoint
 
 
