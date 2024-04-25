@@ -1,13 +1,15 @@
 from flask import Flask, jsonify, request, json, session
-from flask_restful import Api, Resource, reqparse
+import requests
+from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 
 # Create a Flask Instance
 app = Flask(__name__)
+# Connect app to API
 api = Api(app)
 db = SQLAlchemy()
 
-# Configuration for SQLite database with file name (case.db)
+# Configuration for SQLite database with file name (Case.db)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///Case.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -22,6 +24,7 @@ class bookModel(db.Model):
     name = db.Column(db.String(50), nullable=False)
     author = db.Column(db.String(50), nullable=False)
 
+    # Function that returns JSON
     def to_dict(self):
         return {"name": self.name, "author": self.author, "id": self.id}
 
@@ -30,6 +33,7 @@ class bookModel(db.Model):
 with app.app_context():
     db.create_all()
 
+# some books to insert into database later
 famous_books = [
     {"book_id": 1, "name": "To Kill a Mockingbird", "author": "Harper Lee"},
     {"book_id": 2, "name": "1984", "author": "George Orwell"},
@@ -62,7 +66,7 @@ def insert_books_into_db():
 insert_books_into_db()
 
 
-# Resource for LISTING all books and CREATE new book
+# Resource for listing all books from database and CREATE new book
 class Books(Resource):
     def get(self):
         books = bookModel.query.all()
@@ -70,7 +74,7 @@ class Books(Resource):
         for book in books:
             book_data = book.to_dict()
             book_list.append(book_data)
-        return jsonify(book_list)
+        return {"StatusCode": 200, "Books": book_list}
 
     def post(self):
         data = request.get_json(self)
@@ -78,10 +82,15 @@ class Books(Resource):
         new_book = bookModel(name=data["name"], author=data["author"])
         db.session.add(new_book)
         db.session.commit()
-        return {"Massage": "Book has been added"}, 201
+        # return {"STATUS CODE : 201 Created | Massage": "Book has been added"}, 201
+        return {
+            "StatusCode": 201,
+            "Message": "Book was succesfully created",
+            "book": new_book.to_dict(),
+        }, 201
 
 
-# Resource for LISTING indivduell book or DELETE book by ID
+# Resource for listing indivduell book from database or DELETE book by ID from database
 class Book(Resource):
     def get(self, id):
         book = bookModel.query.get(id)
@@ -91,27 +100,49 @@ class Book(Resource):
             return {"massage": "Book not found"}, 404
 
     def delete(self, id):
-        bookTodelete = bookModel.query.filter_by(id=id).first()
+        bookTodelete = bookModel.query.get(id)
         if bookTodelete:
             db.session.delete(bookTodelete)
             db.session.commit()
-            return "Book has been DELETED"
+            """return "Book has been DELETED", 200"""
+            return {
+                "StatusCode": 200,
+                "Massage": "Book has been DELETED",
+                "book": bookTodelete.to_dict(),
+            }
         else:
-            return "Book not found"
+            return {"Massage": "Book not found", "StatusCode": 404}
+
+
+OPEN_LIBRARY_API_URL = "http://openlibrary.org/search.json"
+
+
+# Resource for listing books from OPEN_LIBRARY_API by searching name
+class Search_book(Resource):
+    def get(self, name):
+        # Make a request to the Open Library API
+        URL = f"{OPEN_LIBRARY_API_URL}?q={name}"
+        response = requests.get(URL)
+
+        if response.status_code == 200:
+            data = response.json()
+            books = data.get("docs", [])
+            # Create a list with details for each book
+        for book in books:
+            book_details = {
+                "title": book.get("title", ""),
+                "author": book.get("author_name")[0],  # Get author's name (first)
+                "publish_year": book.get("publish_year")[0],
+            }
+
+            return jsonify({"StatusCode": 200, "book": book_details})
+        else:
+            return jsonify({"StatusCode": 403, "error": "Failed to fetch books"})
 
 
 api.add_resource(Books, "/books")  # API Endpoint
+api.add_resource(Search_book, "/books/<string:name>")  # API Endpoint
 api.add_resource(Book, "/book/<int:id>")  # API Endpoint
-
-
-"""@app.route("/books", methods=["GET"])
-def print():
-    return jsonify(famous_books)
-
-
-@app.route("/<name>")
-def print_name(name):
-    return jsonify("Hallo {}".format(name))"""
 
 
 if __name__ == "__main__":
