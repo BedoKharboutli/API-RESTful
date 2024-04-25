@@ -142,7 +142,7 @@ class Search_book(Resource):
 
 api.add_resource(Books, "/books")  # API Endpoint
 api.add_resource(Search_book, "/books/<string:name>")  # API Endpoint
-api.add_resource(Book, "/book/<int:id>")  # API Endpoint
+api.add_resource(Book, "/book/<int:id>")  # API Endpointt
 
 
 if __name__ == "__main__":
