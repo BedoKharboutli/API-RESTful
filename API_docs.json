@@ -1,0 +1,63 @@
+{
+  "endpoints": [
+    {
+      "url": "http://127.0.0.1:5000/books",
+      "method": "GET",
+      "description": "Fetches a list of all available books in the system.",
+      "parameters": null,
+      "response": {
+        "status_code": 200,
+        "body": "A list of all books in the system."
+      }
+    },
+    {
+      "url": "http://127.0.0.1:5000/books",
+      "method": "POST",
+      "description": "Adds a new book to the system.",
+      "parameters": {
+        "name": "String",
+        "author": "String"
+      },
+      "response": {
+        "status_code": 201,
+        "body": "Information about the newly added book to the system."
+      }
+    },
+    {
+      "url": "http://127.0.0.1:5000/book/<id>",
+      "method": "GET",
+      "description": "Fetches information from db about a specific book based on its ID.",
+      "parameters": {
+        "id": "Integer"
+      },
+      "response": {
+        "status_code": 200,
+        "body": "Information about the specific book."
+      }
+    },
+    {
+      "url": "http://127.0.0.1:5000/book/<id>",
+      "method": "DELETE",
+      "description": "Removes a specific book from the system based on its ID.",
+      "parameters": {
+        "id": "Integer"
+      },
+      "response": {
+        "status_code": 200,
+        "body": "Confirmation that the book has been removed from the system."
+      }
+    },
+    {
+      "url": "http://127.0.0.1:5000/books/<name>",
+      "method": "GET",
+      "description": "Fetches details from the OPEN_LIBRARY_API about a specific book based on its name.",
+      "parameters": {
+        "name": "String"
+      },
+      "response": {
+        "status_code": 200,
+        "body": "Details about the book."
+      }
+    }
+  ]
+}
