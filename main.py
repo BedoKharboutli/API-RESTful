@@ -24,7 +24,7 @@ class bookModel(db.Model):
     name = db.Column(db.String(50), nullable=False)
     author = db.Column(db.String(50), nullable=False)
 
-    # Function that returns JSON
+    # Function that returns data as JSON
     def to_dict(self):
         return {"name": self.name, "author": self.author, "id": self.id}
 
@@ -140,9 +140,18 @@ class Search_book(Resource):
             return jsonify({"StatusCode": 403, "error": "Failed to fetch books"})
 
 
+# Resource for showing the JSON file with the api-documentation in it
+class Show_api_documentation(Resource):
+    def get(self):
+        with open("API_docs.json", "r") as file:
+            api_documentation = json.load(file)
+        return api_documentation
+
+
 api.add_resource(Books, "/books")  # API Endpoint
 api.add_resource(Search_book, "/books/<string:name>")  # API Endpoint
 api.add_resource(Book, "/book/<int:id>")  # API Endpoint
+api.add_resource(Show_api_documentation, "/api_docs")  # API Endpoint
 
 
 if __name__ == "__main__":
