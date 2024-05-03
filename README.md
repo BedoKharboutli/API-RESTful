@@ -23,6 +23,7 @@ pip install -r requirements.txt
 API-dokumentation...
 API-dokumentationen för projektet finns nedan:
 
+GET /api/docs hämtar själva api dokumentationen som json-fil
 GET /books: Hämtar en lista över alla tillgängliga böcker i systemet.
 POST /books: Lägger till en ny bok i systemet. Förväntar sig JSON-data med fält för "name" och "author".
 GET /book/<id>: Hämtar information om en specifik bok baserat på dess ID.
